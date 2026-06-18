@@ -18,6 +18,5 @@
     "skill",
     "agent",
     "hook"
-  ],
-  "hooks": "./hooks/hooks.json"
+  ]
 }
