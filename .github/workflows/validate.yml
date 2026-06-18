@@ -1,0 +1,52 @@
+name: Validate plugin
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "plugins/**"
+      - ".claude-plugin/**"
+      - ".github/workflows/validate.yml"
+  pull_request:
+    paths:
+      - "plugins/**"
+      - ".claude-plugin/**"
+      - ".github/workflows/validate.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Claude Code CLI
+        run: |
+          curl -fsSL https://claude.ai/install.sh | bash
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Official manifest validation
+        run: claude plugin validate .
+
+      - name: Guard against load-breaking manifest keys
+        # `claude plugin validate` accepts skills/agents/hooks as path strings, but
+        # those keys make the plugin "fail to load" at runtime. We rely on the default
+        # scan (skills/, agents/, hooks/hooks.json), so the keys must stay absent.
+        run: |
+          set -euo pipefail
+          for f in plugins/*/.claude-plugin/plugin.json; do
+            if jq -e 'has("skills") or has("agents") or has("hooks")' "$f" >/dev/null; then
+              echo "::error file=$f::Remove skills/agents/hooks keys - they break plugin loading. Rely on the default scan."
+              exit 1
+            fi
+            echo "ok: $f has no load-breaking component keys"
+          done
+
+      - name: Check hook scripts are executable with a shebang
+        run: |
+          set -euo pipefail
+          while IFS= read -r script; do
+            mode=$(git ls-files -s "$script" | awk '{print $1}')
+            [ "$mode" = "100755" ] || { echo "::error file=$script::Hook script not executable (mode $mode)"; exit 1; }
+            head -1 "$script" | grep -q '^#!' || { echo "::error file=$script::Hook script missing shebang"; exit 1; }
+            echo "ok: $script is executable with a shebang"
+          done < <(find plugins -path '*/scripts/*.sh' -type f)
