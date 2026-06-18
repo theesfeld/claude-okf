@@ -1,0 +1,23 @@
+{
+  "name": "okf",
+  "displayName": "OKF Knowledge Catalog",
+  "version": "0.1.0",
+  "description": "Create, follow, and continuously maintain an Open Knowledge Format (OKF) knowledge catalog in every project — a vendor-neutral, plain-markdown standard. Bundles the okf-catalog skill, the okf-auditor agent, and a SessionStart hook that flags any project missing a catalog.",
+  "author": {
+    "name": "theesfeld",
+    "url": "https://github.com/theesfeld"
+  },
+  "homepage": "https://github.com/theesfeld/claude-okf",
+  "repository": "https://github.com/theesfeld/claude-okf",
+  "license": "MIT",
+  "keywords": [
+    "okf",
+    "open-knowledge-format",
+    "knowledge-catalog",
+    "documentation",
+    "skill",
+    "agent",
+    "hook"
+  ],
+  "hooks": "./hooks/hooks.json"
+}

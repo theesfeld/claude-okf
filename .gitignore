@@ -1,0 +1,12 @@
+# OKF knowledge catalogs are never published to a public repo.
+# The catalog lives locally (per the project's knowledge-catalog directive)
+# but its contents are project-internal and stay out of git.
+# Anchored with a leading slash so it matches ONLY the bundle root,
+# not the plugin's own plugins/okf/ tree.
+/okf/
+/.okf/
+
+# This repo intentionally ships plugin/marketplace manifests under .claude-plugin/.
+# Re-include them: the global ~/.config/git/ignore rule '.claude*' would otherwise
+# exclude every .claude-plugin/ directory in the tree.
+!**/.claude-plugin/
